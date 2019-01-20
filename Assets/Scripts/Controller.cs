@@ -12,6 +12,8 @@ public class Controller : MonoBehaviour
     public float turnSpeed = 45;
     [Header("动画增加参数")]
     public float addSpeed = 0.5f;
+    [Header("枪")]
+    public Transform gun;
     /// <summary>
     /// 动画归零速度参数
     /// </summary>
@@ -44,17 +46,18 @@ public class Controller : MonoBehaviour
     {
         float h = Input.GetAxis("Horizontal");
         float v = Input.GetAxis("Vertical");
-
+        Debug.DrawLine(cam.transform.position, lookAT.position + new Vector3(0, cam.transform.position.y - lookAT.position.y, 0));
         //移动时转向视线方向
         if (v != 0)
         {
 
             //Debug.DrawLine(cam.transform.position, lookAT.position + new Vector3(0, cam.transform.position.y, 0));
             //归一化向量
-            Vector3 camView = ((lookAT.position + new Vector3(0, cam.transform.position.y, 0)) - cam.transform.position).normalized;
+            Vector3 camView = ((lookAT.position + new Vector3(0, cam.transform.position.y - lookAT.position.y, 0)) - cam.transform.position).normalized;
             float angle = Vector3.Angle(transform.forward, camView);
             //Debug.Log(camView);
-            //transform.rotation = Quaternion.LookRotation(camView);
+            //transform.localRotation = Quaternion.LookRotation(camView);
+            //Debug.Log(transform.rotation);
             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(camView), Time.deltaTime * 20);
         }
 
@@ -70,7 +73,7 @@ public class Controller : MonoBehaviour
         else if (Input.GetKey(KeyCode.S))
         {
             speed = Mathf.Lerp(speed, -1, 0.6f);
-            moveSpeed = moveSpeed + moveAddSpeed * Mathf.Pow(Time.deltaTime * 60, 2);
+            moveSpeed = moveSpeed + moveAddSpeed * Mathf.Pow(Time.deltaTime * 10, 2);
         }
         else
         {
@@ -95,7 +98,18 @@ public class Controller : MonoBehaviour
         //转向
         transform.Rotate(transform.up * turnSpeed * Time.deltaTime * h);
         anim.SetFloat("TurnValue", h);
+    }
 
+    private void OnAnimatorIK(int layerIndex)
+    {
 
+        anim.SetIKPositionWeight(AvatarIKGoal.RightHand, 1f);
+        anim.SetIKRotationWeight(AvatarIKGoal.RightHand, 1f);
+
+        if (gun != null)
+        {
+            anim.SetIKPosition(AvatarIKGoal.RightHand, gun.position);
+            anim.SetIKRotation(AvatarIKGoal.RightHand, gun.transform.rotation);
+        }
     }
 }
