@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using RootMotion.FinalIK;
 public class Controller : MonoBehaviour
 {
     [Header("人物移动加速度")]
@@ -12,8 +12,12 @@ public class Controller : MonoBehaviour
     public float turnSpeed = 45;
     [Header("动画增加参数")]
     public float addSpeed = 0.5f;
-    [Header("枪")]
-    public Transform gun;
+    [Header("是否瞄准")]
+    public bool isGun = false;
+    [Header("瞄准位置")]
+    public Transform aimPos;
+    [Header("枪械")]
+    public GameObject gun;
     /// <summary>
     /// 动画归零速度参数
     /// </summary>
@@ -24,6 +28,7 @@ public class Controller : MonoBehaviour
     GameObject cam;
 
     public Animator anim;
+    FullBodyBipedIK ik;
 
     // Start is called before the first frame update
     void Start()
@@ -31,6 +36,8 @@ public class Controller : MonoBehaviour
         anim = GetComponent<Animator>();
         cam = GameObject.Find("Main Camera");
         lookAT = transform.parent.Find("LookAT").transform;
+        ik = GetComponent<FullBodyBipedIK>();
+        gun.SetActive(false);
     }
 
     // Update is called once per frame
@@ -38,7 +45,9 @@ public class Controller : MonoBehaviour
     {
         lookAT.position = transform.position;
         Move();
-
+        Aim();
+        
+        //Debug.Log(cam.transform.forward);
     }
 
     //人物移动
@@ -46,7 +55,8 @@ public class Controller : MonoBehaviour
     {
         float h = Input.GetAxis("Horizontal");
         float v = Input.GetAxis("Vertical");
-        Debug.DrawLine(cam.transform.position, lookAT.position + new Vector3(0, cam.transform.position.y - lookAT.position.y, 0));
+       
+
         //移动时转向视线方向
         if (v != 0)
         {
@@ -55,9 +65,7 @@ public class Controller : MonoBehaviour
             //归一化向量
             Vector3 camView = ((lookAT.position + new Vector3(0, cam.transform.position.y - lookAT.position.y, 0)) - cam.transform.position).normalized;
             float angle = Vector3.Angle(transform.forward, camView);
-            //Debug.Log(camView);
-            //transform.localRotation = Quaternion.LookRotation(camView);
-            //Debug.Log(transform.rotation);
+            
             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(camView), Time.deltaTime * 20);
         }
 
@@ -100,16 +108,32 @@ public class Controller : MonoBehaviour
         anim.SetFloat("TurnValue", h);
     }
 
-    private void OnAnimatorIK(int layerIndex)
+    public void Aim()
     {
+        //瞄准准星
+        aimPos.position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        //aimPos.position += new Vector3(0, 0, transform.position.z + 10);
+        //Ray ray = Camera.main.ScreenPointToRay(aimPos.position);
+        
+        //aimPos.position = Camera.main.ScreenToWorldPoint(aimPos.position);
+        //aimPos.position = new Vector3(aimPos.position.x, aimPos.position.y, transform.position.z + 5);
+       
+        
 
-        anim.SetIKPositionWeight(AvatarIKGoal.RightHand, 1f);
-        anim.SetIKRotationWeight(AvatarIKGoal.RightHand, 1f);
-
-        if (gun != null)
+        if (Input.GetMouseButton(1))
         {
-            anim.SetIKPosition(AvatarIKGoal.RightHand, gun.position);
-            anim.SetIKRotation(AvatarIKGoal.RightHand, gun.transform.rotation);
+            anim.SetBool("IsAim", true);
+            ik.solver.rightHandEffector.positionWeight = 1.0f;
+            ik.solver.leftHandEffector.positionWeight = 1.0f;
+            gun.SetActive(true);
+            GetComponent<AimIK>().enabled = true;
+            GetComponent<AimIK>().solver.target = aimPos;
+        }
+        else
+        {
+            //anim.SetBool("IsAim", false);
+            //ik.solver.rightHandEffector.positionWeight = 0.0f;
+            //ik.solver.leftHandEffector.positionWeight =  0.0f;
         }
     }
 }
