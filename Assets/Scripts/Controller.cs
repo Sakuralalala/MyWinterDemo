@@ -28,6 +28,8 @@ public class Controller : MonoBehaviour
     public Transform aimPos;
     [Header("枪械")]
     public GameObject gun;
+    [Header("开火口")]
+    public Transform firePos;
     /// <summary>
     /// 动画归零速度参数
     /// </summary>
@@ -35,6 +37,7 @@ public class Controller : MonoBehaviour
     float speed = 0;
     Transform lookAT;
     
+    LineRenderer lineRenderer;
     GameObject cam;
     
 
@@ -48,8 +51,7 @@ public class Controller : MonoBehaviour
     {
         anim = GetComponent<Animator>();
         cam = GameObject.Find("Main Camera");
-        //moveCam = GameObject.Find("MoveCamera");
-        //aimCam = GameObject.Find("AimCamera");
+        lineRenderer = GetComponent<LineRenderer>();
         moveCamera = GameObject.Find("MoveCamera").GetComponent<CinemachineFreeLook>();
         aimCamera = GameObject.Find("AimCamera").GetComponent<CinemachineFreeLook>();
         lookAT = transform.parent.Find("LookAT").transform;
@@ -63,8 +65,8 @@ public class Controller : MonoBehaviour
         lookAT.position = transform.position;
         Move();
         Aim();
-        
-        //Debug.Log(cam.transform.forward);
+        Shoot();
+        Debug.Log(aimPos.position);
     }
 
     //人物移动
@@ -75,7 +77,7 @@ public class Controller : MonoBehaviour
        
 
         //移动时转向视线方向
-        if (v != 0)
+        if (v != 0 && isAim == false)
         {
             //归一化向量
             Vector3 camView = ((lookAT.position + new Vector3(0, cam.transform.position.y - lookAT.position.y, 0)) - cam.transform.position).normalized;
@@ -85,6 +87,7 @@ public class Controller : MonoBehaviour
         }
 
         //移动
+        //移动速度的计算以及动画传递参数的计算
         if (Input.GetKey(KeyCode.W))
         {
             Mathf.Clamp(speed, 0, 3);
@@ -115,8 +118,22 @@ public class Controller : MonoBehaviour
             }
             moveSpeed = 0;
         }
-        //moveSpeed = moveSpeed + moveAddSpeed * Mathf.Pow(Time.deltaTime, 2);
-        transform.position += transform.forward * v * moveSpeed * Time.deltaTime;
+
+        //人物移动的计算
+        if (isAim)
+        {
+            //相机forward向量修正角度
+            float angle = transform.eulerAngles.x - cam.transform.eulerAngles.x;
+            Vector3 camNewForward = Quaternion.AngleAxis(angle, cam.transform.right.normalized) * cam.transform.forward.normalized;
+            cam.transform.forward = camNewForward;
+            transform.position += (cam.transform.forward * v * moveSpeed * Time.deltaTime);
+        }
+        else
+        {
+            
+            transform.position += (transform.forward * v * moveSpeed * Time.deltaTime);
+        }
+        
         //播放移动动画
         anim.SetFloat("Speed", speed);
 
@@ -127,22 +144,21 @@ public class Controller : MonoBehaviour
 
     public void Aim()
     {
-
+        //记录下相机切换前的相机方向
+        Vector3 oldCam = cam.transform.forward;
+        
         if (Input.GetMouseButton(1))
         {
             isAim = true;
             //相机切换
             moveCamera.Priority = 10;
             aimCamera.Priority = 11;
+            //切换后的方向指向切换前的方向
+            //cam.transform.rotation = Quaternion.LookRotation(oldCam);
 
-            //瞄准准星
-            Vector3 rayOrigin = Camera.main.ViewportToWorldPoint(new Vector3(0.8f, 0.7f, 0.0f));
+            //瞄准时人物转向
             Vector3 camView = ((lookAT.position + new Vector3(0, cam.transform.position.y - lookAT.position.y, 0)) - cam.transform.position).normalized;
-            float angle = Vector3.Angle(transform.forward, camView);
-
             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(camView), Time.deltaTime * 20);
-            raycastHitPoint = cam.transform.forward * 1000;
-            aimPos.position = raycastHitPoint;
 
             //参数设置
             anim.SetBool("IsAim", true);
@@ -157,7 +173,7 @@ public class Controller : MonoBehaviour
             moveCamera.Priority = 11;
             aimCamera.Priority = 10;
 
-            isAim = false;
+            //isAim = false;
             anim.SetBool("IsAim", false);
             ik.solver.rightHandEffector.positionWeight = 0.0f;
             ik.solver.leftHandEffector.positionWeight = 0.0f;
@@ -165,4 +181,19 @@ public class Controller : MonoBehaviour
             GetComponent<AimIK>().enabled = false;
         }
     }
+
+    public void Shoot()
+    {
+        
+        if (isAim)
+        {
+            if (Input.GetMouseButtonDown(0))
+            {
+               
+                lineRenderer.SetPosition(0, firePos.position);
+                lineRenderer.SetPosition(1, aimPos.position);
+            }
+        }
+    }
+   
 }
