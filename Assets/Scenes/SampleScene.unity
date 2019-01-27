@@ -506,7 +506,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 292101354}
-  m_LocalRotation: {x: -0.008583587, y: 0.000000017215658, z: 3.2385672e-10, w: 0.99996316}
+  m_LocalRotation: {x: -0.008583587, y: -0.000000017212631, z: 2.8327625e-11, w: 0.99996316}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -739,8 +739,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 534669902}
-  m_LocalRotation: {x: 0.032580726, y: -0.18592227, z: -0.006168508, w: -0.98200476}
-  m_LocalPosition: {x: 0.42, y: 1.023, z: -2.3400002}
+  m_LocalRotation: {x: 0.00955861, y: 0.0000000010753497, z: -1.0279319e-11, w: 0.99995434}
+  m_LocalPosition: {x: 0, y: 1.132, z: -3.96}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 110808501}
@@ -1255,7 +1255,7 @@ MonoBehaviour:
   - m_Script
   m_LockStageInInspector: 
   m_StreamingVersion: 20170927
-  m_Priority: 11
+  m_Priority: 10
   m_StandbyUpdate: 2
   m_LookAt: {fileID: 810653889}
   m_Follow: {fileID: 85997543}
@@ -1560,7 +1560,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1369010622}
-  m_LocalRotation: {x: 0.00955861, y: 5.3999755e-10, z: -2.4812472e-10, w: 0.99995434}
+  m_LocalRotation: {x: 0.00955861, y: 5.3999777e-10, z: -2.4814692e-10, w: 0.99995434}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -1699,10 +1699,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fixTransforms: 1
   solver:
-    IKPosition: {x: -0.005860327, y: 0.9402233, z: 3.524933}
+    IKPosition: {x: 0.30995208, y: 0.58819544, z: 3.6271756}
     IKPositionWeight: 1
     root: {fileID: 1537491956}
-    target: {fileID: 2033430910}
+    target: {fileID: 110808501}
     tolerance: 0
     maxIterations: 4
     useRotationLimits: 1
@@ -1738,7 +1738,7 @@ MonoBehaviour:
     transform: {fileID: 120175116}
     axis: {x: 0, y: 0, z: 1}
     poleAxis: {x: 0, y: 1, z: 0}
-    polePosition: {x: -0.003104723, y: 3.7528322, z: 0.34857923}
+    polePosition: {x: 0.27597913, y: 3.6794763, z: 0.7215209}
     poleWeight: 0
     poleTarget: {fileID: 1852906740}
     clampWeight: 0.1
@@ -2736,7 +2736,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1690749193}
-  m_LocalRotation: {x: -0.03258076, y: 0.18592228, z: 0.006168785, w: 0.98200476}
+  m_LocalRotation: {x: -0.032580756, y: 0.18592228, z: 0.0061687846, w: 0.98200476}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:

@@ -62,11 +62,12 @@ public class Controller : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        
         lookAT.position = transform.position;
         Move();
         Aim();
         Shoot();
-        Debug.Log(aimPos.position);
+        Debug.Log(cam.transform.GetChild(0).transform.position);
     }
 
     //人物移动
@@ -125,8 +126,8 @@ public class Controller : MonoBehaviour
             //相机forward向量修正角度
             float angle = transform.eulerAngles.x - cam.transform.eulerAngles.x;
             Vector3 camNewForward = Quaternion.AngleAxis(angle, cam.transform.right.normalized) * cam.transform.forward.normalized;
-            cam.transform.forward = camNewForward;
-            transform.position += (cam.transform.forward * v * moveSpeed * Time.deltaTime);
+            //cam.transform.forward = camNewForward;
+            transform.position += (camNewForward * v * moveSpeed * Time.deltaTime);
         }
         else
         {
@@ -173,7 +174,7 @@ public class Controller : MonoBehaviour
             moveCamera.Priority = 11;
             aimCamera.Priority = 10;
 
-            //isAim = false;
+            isAim = false;
             anim.SetBool("IsAim", false);
             ik.solver.rightHandEffector.positionWeight = 0.0f;
             ik.solver.leftHandEffector.positionWeight = 0.0f;
